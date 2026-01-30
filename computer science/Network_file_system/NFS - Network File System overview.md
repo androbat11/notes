@@ -1,0 +1,1 @@
+- https://www.ibm.com/docs/en/aix/7.1.0?topic=management-network-file-system
