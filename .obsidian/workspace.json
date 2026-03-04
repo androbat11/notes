@@ -4,79 +4,64 @@
     "type": "split",
     "children": [
       {
-        "id": "580d9f792ce800da",
-        "type": "split",
+        "id": "53ff54431e14162c",
+        "type": "tabs",
         "children": [
           {
-            "id": "2ecdad4b3284db58",
-            "type": "tabs",
-            "dimension": 60.3988603988604,
-            "children": [
-              {
-                "id": "491bdf07c41c5edf",
-                "type": "leaf",
-                "state": {
-                  "type": "markdown",
-                  "state": {
-                    "file": "linux/Bootloader.md",
-                    "mode": "source",
-                    "source": false
+            "id": "dc6f5dfab0cd89f7",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": "/home/manuel/Documents/learning/notes",
+                  "focus": false,
+                  "profile": {
+                    "args": [],
+                    "executable": "/bin/sh",
+                    "followTheme": true,
+                    "name": "",
+                    "platforms": {
+                      "linux": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
                   },
-                  "icon": "lucide-file",
-                  "title": "Bootloader"
+                  "serial": null
                 }
-              }
-            ]
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: sh"
+            }
           },
           {
-            "id": "53ff54431e14162c",
-            "type": "tabs",
-            "dimension": 39.6011396011396,
-            "children": [
-              {
-                "id": "d1db49ba35976ca4",
-                "type": "leaf",
-                "pinned": true,
-                "state": {
-                  "type": "terminal:terminal",
-                  "state": {
-                    "terminal:terminal": {
-                      "cwd": "/home/manuel/Documents/learning/notes",
-                      "focus": false,
-                      "profile": {
-                        "args": [],
-                        "executable": "/bin/sh",
-                        "followTheme": true,
-                        "name": "",
-                        "platforms": {
-                          "linux": true
-                        },
-                        "pythonExecutable": "python3",
-                        "restoreHistory": false,
-                        "rightClickAction": "copyPaste",
-                        "successExitCodes": [
-                          "0",
-                          "SIGINT",
-                          "SIGTERM"
-                        ],
-                        "terminalOptions": {
-                          "documentOverride": null
-                        },
-                        "type": "integrated",
-                        "useWin32Conhost": true
-                      },
-                      "serial": null
-                    }
-                  },
-                  "pinned": true,
-                  "icon": "terminal",
-                  "title": "Terminal: ✳ Linux Bootloader"
-                }
-              }
-            ]
+            "id": "43dee1e562a52809",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Artificial_inteligence/Spec Driven development - Example.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Spec Driven development - Example"
+            }
           }
-        ],
-        "direction": "horizontal"
+        ]
       }
     ],
     "direction": "vertical"
@@ -236,33 +221,42 @@
       "bases:Create new base": false
     }
   },
-  "active": "d1db49ba35976ca4",
+  "active": "dc6f5dfab0cd89f7",
   "lastOpenFiles": [
-    "linux/Bootloader.md.tmp.7279.1772054093251",
-    "linux/Bootloader.md",
-    "linux/GRUB - Bootloader.md",
-    "network/nginx.md.tmp.76836.1771985168864",
-    "network/nginx.md",
-    "programming/Event Loop - concurrency.md.tmp.76836.1771981601171",
-    "programming/Event Loop - concurrency.md",
-    "linux/X86.md",
-    "programming/Typescript/Incremental cache bug.md",
-    "programming/Typescript/Incremental cache bug.md.tmp.29914.1771945349940",
-    "programming/Typescript",
-    "programming/Untitled.md",
-    "network/nginx.md.tmp.14184.1771933064943",
-    "linux/etc - linux.md",
-    "linux/Btrfs.md",
-    "network/nginx.md.tmp.14184.1771901676261",
-    "programming/Concurrent programming.md",
+    "Artificial_inteligence/Spec Driven development - Example.md",
+    "Artificial_inteligence/Spec Driven Development.md",
+    "Artificial_inteligence/Spec Driven development - Example.md.tmp.180318.1772637156599",
+    "Software_engineering/Software engineering lifecycle.md",
+    "operating_system/Timeshift.md",
+    "operating_system/linux/File system.md.tmp.191363.1772636789562",
+    "operating_system/Timeshift.md.tmp.191363.1772636056778",
+    "Software_engineering/Untitled.md",
+    "Software_engineering/Software engineering lifecycle.md.tmp.180318.1772635637053",
+    "Software_engineering",
+    "State_machine",
+    "Artificial_inteligence/Spec Driven Development.md.tmp.135251.1772635291627",
+    "Artificial_inteligence",
+    "operating_system/linux/Linux Desktop Enviroment.md",
+    "operating_system/linux/Linux terminal.md",
+    "operating_system/linux/Linux terminal.md.tmp.246849.1772587482913",
+    "operating_system/linux/File system.md",
+    "software_architecture/Architecture_roadmap/Roadmap.md",
+    "Pencil.md",
+    "operating_system/linux/Linux Desktop Enviroment.md.tmp.153016.1772585309307",
+    "programming/Typescript/Algebraic Data Types.md",
+    "programming/Typescript/Extends function parameter.md",
+    "databases/noSQL/mongodb/Project.md",
+    "Rust/borrowing/Mutable Borrowing.md",
     "hardware/Thread.md",
-    "hardware",
-    "programming/Parallelism.md",
-    "programming/Concurrent programming.md.tmp.14184.1771900577250",
-    "programming/Concurrent programming.md.tmp.14184.1771900216030",
-    "programming",
-    "learning_guideline.md",
-    "software_architecture/event_driven/event_driven.md",
-    "software_architecture/event_driven/event.md"
+    "software_architecture/Saga pattern.md",
+    "operating_system/linux/EFI.md",
+    "operating_system/linux/Bootloader.md",
+    "Rust/borrowing/borrow.md",
+    "software_architecture/anti-patterns/Distributed monolith.md",
+    "computer science/distributed_systems/Untitled.md",
+    "docker/Multi-stage build pattern.md",
+    "docker/image.md",
+    "programming/Test/Chaos testing.md",
+    "operating_system/linux/GRUB - Bootloader.md"
   ]
 }

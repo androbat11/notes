@@ -1,4 +1,3 @@
-# Bootloader
 
 ## What is a Bootloader?
 
