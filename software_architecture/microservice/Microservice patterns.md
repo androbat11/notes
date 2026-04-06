@@ -1,3 +1,13 @@
+---
+title: Microservice Patterns
+description: ''
+author: generic-claude-agent
+created: 2026-04-06T20:29:53.466605+00:00
+remargin_pending: 9
+remargin_pending_for: []
+remargin_last_activity: 2026-04-06T20:31:50.783678+00:00
+---
+
 # Microservice Patterns
 
 > A structured reference of the most important microservice patterns and the guidelines to design, build, and operate real microservices.
@@ -11,6 +21,17 @@ A microservice is an independently deployable unit of software that:
 - Has its own data store (no shared databases)
 - Communicates over the network via well-defined interfaces
 - Can be deployed, scaled, and failed independently of all other services
+
+```remargin
+---
+id: 0mp
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:29:53.465920+00:00
+checksum: sha256:e3e480ae3c02ea0ef1f0471762d13f16761b8c20237200e615b6b0c38d735273
+---
+The "distributed monolith" warning is the most important line in this document. Most teams that fail at microservices don't fail because they picked the wrong messaging pattern — they fail because they decomposed by technical layer or duplicated shared state without enforcing ownership. The litmus test here is concrete: deployment independence. If you need to coordinate a release across two repos, you have a monolith spread across a network, which is strictly worse than a regular monolith.
+```
 
 If you can't deploy it without coordinating with another team, it's not a microservice — it's a distributed monolith.
 
@@ -37,6 +58,17 @@ Use DDD to find natural service boundaries.
 - **Generic subdomain** — commodity functionality; buy or use OSS
 - **Bounded Context** — the explicit boundary within which a model applies; maps 1:1 to a service
 - **Ubiquitous Language** — each service speaks its own language; translation happens at the boundary
+```remargin
+---
+id: 0ff
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:29:53.466128+00:00
+checksum: sha256:aef728a826aecf2742d5957416356e5977959dcfe8e20e37a34b0c1c20523076
+---
+The Strangler Fig is underused in practice. Most teams default to a big-bang rewrite when the monolith becomes painful, which is almost always a mistake. The Strangler Fig requires more discipline — maintaining the facade, managing two codepaths, resisting the urge to "just finish the migration" — but it keeps the system shippable at every point. The key insight is that the facade isn't temporary scaffolding; it's the migration strategy itself. Teams that treat it as a short-term hack tend to collapse it too early.
+```
+
 
 ### 3. Strangler Fig Pattern
 Incrementally migrate a monolith to microservices without a big-bang rewrite.
@@ -76,6 +108,17 @@ How services talk to each other.
 - Simple, universal, human-readable
 - Use for external-facing APIs and request/response where the client needs an immediate answer
 - Design around resources, not RPCs
+```remargin
+---
+id: 0ws
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:29:53.466355+00:00
+checksum: sha256:bd3d9a77823cafb7fd0813c2d39b45182c9441391d5d652c5c5c511f438ffb7e
+---
+The distinction between commands and events deserves emphasis beyond what the table captures. Commands imply intent directed at a specific receiver and carry an expectation of action. Events are facts — they describe what happened, not what should happen next. Conflating them leads to brittle systems: if an "event" is actually a disguised command to one specific consumer, adding a second consumer breaks the semantic contract. The discipline of naming — OrderPlaced vs. PlaceOrder — forces the right thinking at design time.
+```
+
 - Stateless: no session state on the server
 
 **gRPC (HTTP/2 + Protobuf)**
@@ -153,6 +196,17 @@ Partner API → [Partner BFF] → services
 - Avoids a bloated general-purpose gateway
 - Owned by the frontend team
 
+```remargin
+---
+id: 56k
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:30:10.226812+00:00
+checksum: sha256:8645ad1fafe0d620662d8e220cf7f2682b132fd755c10bf3855d0a1f25786bf2
+---
+The choreography vs. orchestration tradeoff deserves more weight than the table gives it. Choreography feels clean at first — no central coordinator, pure loose coupling — but debugging a distributed saga stuck mid-way is extremely hard without purpose-built tooling. You end up reconstructing the orchestration logic in your head from event logs. Orchestration adds coupling to the orchestrator, but makes the business process visible and testable as a unit. Practical rule: use orchestration for anything involving money, inventory, or user-visible state. Choreography is fine for analytics pipelines and notification side-effects where a missed step isn't catastrophic.
+```
+
 ### 10. Service Mesh
 Infrastructure layer that handles all service-to-service communication concerns.
 
@@ -178,6 +232,17 @@ How to handle data in a distributed system.
 
 ### 11. Database per Service
 Each service owns its own database. No service may directly access another service's database.
+
+```remargin
+---
+id: dz7
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:30:10.227131+00:00
+checksum: sha256:745eca9dd522e999858bc9c76c15beaf1cfcc0f7515fd1b94ceea850af0f81d5
+---
+The Outbox is the most commonly skipped pattern here and the one with the worst consequences when missing. The dual-write problem (write to DB, then publish to broker) looks harmless in a happy path — it almost always works — which is exactly why teams skip the Outbox. The failure surfaces when the broker is briefly unavailable, the process crashes between the two writes, or a network partition occurs. At that point you have either a ghost event or silent data loss, neither of which is easily detectable without audit tooling. If a service publishes events tied to DB writes, the Outbox is non-negotiable.
+```
 
 ```
 Order Service    → orders_db    (PostgreSQL)
@@ -223,6 +288,17 @@ A central orchestrator (not a god service — just coordination logic) drives th
 | Best for | Simple flows | Complex, long-running flows |
 
 ### 13. CQRS — Command Query Responsibility Segregation
+```remargin
+---
+id: 1x8
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:30:10.227455+00:00
+checksum: sha256:f58760aa1c2e8a0b42bfc7a15c5b218114e75783f8cbf1461411a3f844eee874
+---
+Bulkheads are consistently underimplemented relative to circuit breakers, probably because the failure mode is less obvious. A circuit breaker trips when a downstream service is clearly failing. A bulkhead protects against a downstream that is *slow but not failing* — the more dangerous scenario, because it silently exhausts a shared thread pool without triggering obvious alerts. Thread pool isolation per dependency is the right default and most frameworks (resilience4j, for instance) make it easy to configure. There's little reason not to have it.
+```
+
 Separate the write model (commands) from the read model (queries).
 
 ```
@@ -384,6 +460,17 @@ Expose and collect quantitative measurements from every service.
 2. **Traffic** — how much demand is there (requests/sec)
 3. **Errors** — rate of failed requests (5xx, timeouts)
 4. **Saturation** — how close to capacity (CPU %, memory %, queue depth)
+```remargin
+---
+id: 5dz
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:31:40.424841+00:00
+checksum: sha256:b24792f678c9a050d68f1c5db248506c6ed0f100e7d2f44382c64b342dd841ee
+---
+Among the Four Golden Signals, Saturation is consistently the most neglected. Latency, traffic, and errors are easy to instrument and alert on. Saturation requires knowing what the *binding constraint* is for each service — CPU? Memory? DB connection pool? Kafka consumer lag? Queue depth? The answer differs per service and can shift over time, so you can't define a generic Saturation metric. It has to be chosen deliberately per service. Teams that skip this end up with services that degrade gracefully right up until they don't, with no leading indicator.
+```
+
 
 - Expose metrics in Prometheus format (`/metrics` endpoint)
 - Scrape with Prometheus, visualize with Grafana
@@ -438,6 +525,17 @@ v2 → 100% traffic (full rollout)
 - Reduces blast radius of bad deployments
 - Requires feature flagging or traffic splitting at the gateway/mesh level
 - Automated rollback if error rate or latency crosses threshold
+
+```remargin
+---
+id: 6b8
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:31:45.558647+00:00
+checksum: sha256:4a508a63818eabdb6b570c6b1fb461b43b993d715183e397a925f930ce620e84
+---
+Canary releases only work if you have the discipline to act on the signals. The hard part isn't the traffic split — most service meshes and gateways make that trivial. The hard part is defining the rollback threshold *in advance* and automating it. Teams that do manual canary analysis invariably let confirmation bias creep in: the elevated error rate is "probably just noise." Automated rollback triggered by a pre-agreed threshold removes that cognitive load and makes the whole strategy credible.
+```
 
 ### 28. Sidecar Pattern
 Attach auxiliary functionality to a service as a co-located proxy/agent.
@@ -550,6 +648,17 @@ End-to-end tests   → minimal; only for critical user journeys
 ### Organizational
 - **You build it, you run it** — the team that builds a service is on-call for it
 - **Team topology**: each service is owned by one team; no shared ownership
+```remargin
+---
+id: q6k
+author: generic-claude-agent
+type: agent
+ts: 2026-04-06T20:31:50.783678+00:00
+checksum: sha256:cfd40444a4e4e611ce5602b1b741c9b7b6486a9d41db040486624e79d8db850d
+---
+"You build it, you run it" is the organizational principle that makes every reliability pattern in Part IV actually get implemented. Circuit breakers, bulkheads, and timeouts tend to be skipped when a separate ops team absorbs the on-call pain. When the team that ships the code is also paged at 2am, the calculus changes immediately. This isn't just cultural preference — it's the feedback loop that keeps reliability work prioritized against feature pressure. Without it, the guidelines in Part VIII read like nice-to-haves.
+```
+
 - **Runbooks**: every service has documented on-call procedures for common failure modes
 - **Post-mortems**: blameless analysis of every production incident
 
