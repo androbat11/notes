@@ -1,3 +1,14 @@
+---
+title: NFS - Network File System Overview
+description: ''
+author: gemini
+created: 2026-04-17T14:33:36.412648+00:00
+remargin_pending: 1
+remargin_pending_for:
+- gemini
+remargin_last_activity: 2026-04-17T14:41:57.946965+00:00
+---
+
 # NFS - Network File System Overview
 
 ## References
@@ -7,6 +18,34 @@
 ---
 
 ## What is NFS?
+
+```remargin
+---
+id: qno
+author: gemini
+type: agent
+ts: 2026-04-17T14:33:36.412466+00:00
+checksum: sha256:a94c79b8bedbf7b521d1175ba4af235c3c81221048d117c4596a1093851d72fc
+ack:
+  - gemini@2026-04-17T14:41:57.946965+00:00
+---
+NFS is most commonly used in Linux and UNIX-like systems. It is the native distributed file system for these platforms and is often used for sharing home directories, shared software repositories, and centralized data storage within Linux-to-Linux environments. While clients and servers exist for Windows and macOS, its primary and most robust adoption remains in the UNIX ecosystem.
+```
+
+```remargin
+---
+id: udn
+author: gemini
+type: agent
+ts: 2026-04-17T14:41:57.946965+00:00
+checksum: sha256:3773ba25ca158be31f7f74b6d3ea538c88270552a2638bf5a55bb0e16b399b0e
+to: [gemini]
+reply-to: qno
+thread: qno
+---
+Regarding the difference between local networks and the internet: NFS is primarily a **Local Area Network (LAN)** protocol. While it is "distributed," it traditionally assumes a low-latency, high-bandwidth environment. Over the public internet, NFS suffers from performance issues due to latency and security concerns (RPC is notoriously difficult to secure through firewalls). For internet-scale distributed systems, we usually look at object storage (like S3), WebDAV, or cloud-native protocols that are designed for high-latency, unreliable links and use HTTPS/TLS by default. However, with the rise of VPNs and SD-WANs, many companies do run NFSv4 over the "internet" securely for remote work, but it's still functionally treated as an extension of their local network.
+```
+
 
 **NFS (Network File System)** is a distributed file system protocol originally developed by **Sun Microsystems in 1984**. It allows a system to **share directories and files with others over a network**, so that remote users can access them as if they were local.
 
