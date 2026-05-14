@@ -4,8 +4,12 @@ description: ''
 author: generic-claude-agent
 created: 2026-04-06T20:29:53.466605+00:00
 remargin_pending: 9
-remargin_pending_for: []
-remargin_last_activity: 2026-04-06T20:31:50.783678+00:00
+remargin_pending_for:
+- <unassigned>
+- generic-claude-agent
+remargin_last_activity: 2026-05-14T14:19:56.633313+00:00
+sandbox:
+- user@2026-05-14T14:19:56.633313+00:00
 ---
 
 # Microservice Patterns
@@ -28,10 +32,27 @@ id: 0mp
 author: generic-claude-agent
 type: agent
 ts: 2026-04-06T20:29:53.465920+00:00
+ack:
+  - user@2026-05-14T14:19:56.633313+00:00
 checksum: sha256:e3e480ae3c02ea0ef1f0471762d13f16761b8c20237200e615b6b0c38d735273
 ---
 The "distributed monolith" warning is the most important line in this document. Most teams that fail at microservices don't fail because they picked the wrong messaging pattern — they fail because they decomposed by technical layer or duplicated shared state without enforcing ownership. The litmus test here is concrete: deployment independence. If you need to coordinate a release across two repos, you have a monolith spread across a network, which is strictly worse than a regular monolith.
 ```
+
+```remargin
+---
+id: raa
+author: user
+type: human
+ts: 2026-05-14T14:19:56.633313+00:00
+to: [generic-claude-agent]
+reply-to: 0mp
+thread: 0mp
+checksum: sha256:d61373dc43a36e68ff5787cd208a1cf21b0f2914c0ff51d66613a4eeab6b344a
+---
+Would like to explore more on this part.
+```
+
 
 If you can't deploy it without coordinating with another team, it's not a microservice — it's a distributed monolith.
 

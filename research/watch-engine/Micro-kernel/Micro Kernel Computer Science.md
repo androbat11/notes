@@ -2,16 +2,26 @@ Resource: https://en.wikipedia.org/wiki/Microkernel
 
 # Micro-kernel
 
-The microkernel is the minimum amount of software that can provide the mechanisms needed to implement an Operating system.
 
-[![Microkernel Architecture Style - Mastering Software Architecture](https://raw.githubusercontent.com/RomeroGabriel/mastering-software-architecture/main/doc/images/arch_styles/microkernel_dbs.png)![Microkernel Architecture Style - Mastering Software Architecture](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpmrvMHIFJNYKtTsfWJ142Wp0hp4yZU5qQTZZnwbuBIotuZjP9TO5VBF3p0mfb-oFBENw2Jw&s=10)](https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fromerogabriel.github.io%2Fmastering-software-architecture%2Farch_styles%2Fmicrokernel_arch%2F&ved=0CBUQjRxqFwoTCPjS28OAt5QDFQAAAAAdAAAAABAG&opi=89978449)
 
-## Notes:
-- Interprocess communication
+The Microkernel Architecture Pattern is a [system design](https://www.geeksforgeeks.org/system-design/what-is-system-design-learn-system-design/) approach where a small, core system the microkernel manages essential functions. It allows for flexibility by letting additional features and services be added as needed. 
+
+- This design makes the system adaptable and easier to maintain because new functionalities can be integrated without altering the core system. 
+- By separating the core functionality from extended features, this pattern helps in building modular and scalable systems. 
+- It’s commonly used in operating systems and applications that require high adaptability and can benefit from a clear separation between core and peripheral components.
+
+[![Microkernel Architecture Style - Mastering Software Architecture](https://raw.githubusercontent.com/RomeroGabriel/mastering-software-architecture/main/doc/images/arch_styles/microkernel_dbs.png)
+
+![[Screenshot 2026-05-14 at 10.36.56 AM.png]]
+![[Screenshot 2026-05-14 at 10.38.14 AM.png]]
+### Notes:
+- Interprocess communication - communication between components
 - Thread management
 - Address space
 - Distributed systems
 - Security
+- These modules interact with the kernel through well-defined interfaces.
+- Open / close responsability principle.
 
 ## Questions:
  * #### How to build system's that work when fail?
