@@ -2,8 +2,6 @@ Resource: https://en.wikipedia.org/wiki/Microkernel
 
 # Micro-kernel
 
-
-
 The Microkernel Architecture Pattern is a [system design](https://www.geeksforgeeks.org/system-design/what-is-system-design-learn-system-design/) approach where a small, core system the microkernel manages essential functions. It allows for flexibility by letting additional features and services be added as needed. 
 
 - This design makes the system adaptable and easier to maintain because new functionalities can be integrated without altering the core system. 
@@ -50,3 +48,6 @@ The Microkernel Architecture Pattern is a [system design](https://www.geeksforg
  * 
  * What is UDP/IP
 
+## Attention
+
+While vanilla [_Plugins_](https://metapatterns.io/implementation-metapatterns/plugins/) and [_Hexagonal Architecture_](https://metapatterns.io/implementation-metapatterns/hexagonal-architecture/) keep the business logic in the monolithic _core_component, _Microkernel_ treats the core as a thin [_Middleware_](https://metapatterns.io/extension-metapatterns/middleware/) (called _microkernel_) that connects user-facing applications (_external services_) to resource providers (_internal services_). The _resource_ in question can be anything ranging from CPU time or RAM to business functions. The external services communicate with the microkernel through its _API_ while the internal services implement the microkernel’s _service provider interfaces_ (_SPIs_) (usually there is a kind of internal service and an SPI per resource type).›![[Screenshot 2026-05-14 at 11.12.19 AM.png]]
