@@ -3,10 +3,12 @@ title: 'Sorting Algorithms: The Physics of Order (Advanced)'
 description: ''
 author: Manuel
 created: 2026-04-17T20:35:17.044014+00:00
-remargin_pending: 1
+remargin_pending: 2
 remargin_pending_for:
 - Manuel
-remargin_last_activity: 2026-04-17T20:39:42.420485+00:00
+remargin_last_activity: 2026-05-18T19:40:43.585959+00:00
+sandbox:
+- user@2026-05-18T19:40:43.585959+00:00
 ---
 
 # Sorting Algorithms: The Physics of Order (Advanced)
@@ -31,12 +33,28 @@ id: zta
 author: Manuel
 type: human
 ts: 2026-04-17T20:35:17.043953+00:00
-checksum: sha256:eab134c09ba98a2cbd9afbf93af3c4094d67c7c6053024e17785ceaeaea89430
 ack:
   - Manuel@2026-04-17T20:38:19.758178+00:00
+  - user@2026-05-18T19:40:43.585959+00:00
+checksum: sha256:eab134c09ba98a2cbd9afbf93af3c4094d67c7c6053024e17785ceaeaea89430
 ---
 Bubble sort is one of the most inefficient sorting algorithms in practice. Its $O(n^2)$ time complexity means that doubling the input size quadruples the work — on 10,000 elements it performs ~50 million comparisons, where Merge Sort would do ~130,000. Even with the early-exit optimization for nearly sorted data, it's outperformed by Insertion Sort in that same scenario, which has better cache behavior and fewer swaps. Bubble sort's only real value is pedagogical: the invariant is easy to visualize and reason about. Never use it in production code.
 ```
+
+```remargin
+---
+id: n5w
+author: user
+type: human
+ts: 2026-05-18T19:40:43.585959+00:00
+to: [Manuel]
+reply-to: zta
+thread: zta
+checksum: sha256:edd104fbc66fbe7bd1f6b7d522e2cdaf0c036a8efbf5476570cba9608a35e9e1
+---
+Bubble sort is an inneficient algorithm.
+```
+
 
 ```remargin
 ---
@@ -44,12 +62,12 @@ id: 4it
 author: Manuel
 type: human
 ts: 2026-04-17T20:38:19.758178+00:00
-checksum: sha256:254d774a6beb23c681a2af3831520a71c09f38b6794ee48e380960408635ab99
 to: [Manuel]
 reply-to: zta
 thread: zta
 ack:
   - Manuel@2026-04-17T20:39:42.420485+00:00
+checksum: sha256:254d774a6beb23c681a2af3831520a71c09f38b6794ee48e380960408635ab99
 ---
 Agreed on all counts. Worth adding some concrete intuition for *why* the cache behavior difference matters: Insertion Sort shifts elements one position at a time in a tight inner loop, which is sequential memory access — the CPU prefetcher handles it well. Bubble sort's adjacent-swap pattern is similar, but it performs up to $O(n^2)$ swaps vs. Insertion Sort's $O(n)$ shifts on nearly sorted data, since a shift moves one element while a swap moves two. The write pressure alone makes bubble sort slower in practice even when the comparison counts are close.
 
@@ -62,10 +80,10 @@ id: rin
 author: Manuel
 type: human
 ts: 2026-04-17T20:39:42.420485+00:00
-checksum: sha256:821f8772152424f4bab4bd864c50e0c23de5b8774584ff3b5e689e8e1e50a113
 to: [Manuel]
 reply-to: 4it
 thread: zta
+checksum: sha256:821f8772152424f4bab4bd864c50e0c23de5b8774584ff3b5e689e8e1e50a113
 ---
 The "double loss" framing is apt. To make the constant factor point concrete: in a random array, bubble sort performs $\frac{n(n-1)}{2}$ comparisons *and* up to $\frac{n(n-1)}{2}$ swaps — each swap being three writes (temp, a←b, b←temp). Insertion sort performs the same number of comparisons in the worst case, but its inner loop does only *shifts* (one write per step), and crucially stops early once the element is in place. The total number of shifts equals the number of inversions in the array, which for random data averages $\frac{n(n-1)}{4}$ — half as many memory writes, all sequential.
 
