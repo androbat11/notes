@@ -7,12 +7,57 @@ argument-hint: "install | on | off | response-on | response-off | status"
 
 # Voice I/O pipeline for terminal LLM agents (v1.1)
 
-> Status: working end-to-end on Linux/Wayland (Fedora), verified in live use.
-> Output engine is Piper (neural), voice `en_US-lessac-high`, length-scale
-> 1.15 — all three chosen by listening tests, not defaults. The
-> troubleshooting section near the end is worth reading before changing the
-> speech path; several non-obvious failure modes are documented there with
-> the evidence that identified them.
+> **Status:** working end-to-end and verified in live daily use. Developed
+> and tested on Fedora with Wayland; the Linux steps below use `dnf`, so
+> substitute your package manager (`apt`, `pacman`, …) where noted — nothing
+> here is Fedora-specific in principle. macOS is first-class, Windows is
+> supported but was written from documentation rather than tested on real
+> hardware, so treat the Windows branches as needing verification.
+>
+> **Speech output runs on Piper** (local neural TTS), voice
+> `en_US-lessac-high`, `--length-scale 1.15`. Those three were settled by
+> listening comparisons rather than left at defaults; they're overridable
+> (see the wrapper). Read the troubleshooting section at the end before
+> changing anything in the speech path — it documents several non-obvious
+> failure modes together with the evidence that identified each, and it will
+> save hours.
+
+## Quick start (read this first if you just want it working)
+
+What you get: hold SPACE to dictate instead of typing, and optionally have
+the agent's replies read aloud in full. Everything runs locally — no audio
+or text leaves the machine, and there are no API keys or accounts.
+
+On Linux, for the common case (Claude Code, which has native voice input,
+so only output needs wiring):
+
+```bash
+# 1. Speech engine (neural TTS) + a voice model (~114MB)
+python3 -m pip install --user piper-tts
+mkdir -p ~/.local/share/piper-voices && cd ~/.local/share/piper-voices
+BASE="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/high"
+curl -sSL --retry 6 --retry-delay 5 --retry-all-errors \
+  -O "$BASE/en_US-lessac-high.onnx" -O "$BASE/en_US-lessac-high.onnx.json"
+
+# 2. Create the two scripts from Step 1 and Step 6 below, then:
+chmod +x ~/.local/bin/voice-speak ~/.local/bin/voice-speak-hook.sh
+
+# 3. Sanity check — you should hear this spoken clearly
+~/.local/bin/voice-speak "Voice output is working."
+
+# 4. Turn spoken replies on (also wires the Stop hook; see Step 6)
+mkdir -p ~/.cache/llm-voice && touch ~/.cache/llm-voice/output.flag
+```
+
+Then ask the agent a question whose answer takes **more than ~10 seconds to
+read aloud** and confirm you hear all of it. A short phrase is not a valid
+test — it passes even when the pipeline is badly broken.
+
+Voice *input* only needs the extra setup in Steps 2-4 if your agent has no
+built-in dictation. Claude Code does (`voiceEnabled` in
+`~/.claude/settings.json`), so prefer that over this skill's capture path.
+
+Full detail, per-OS branches, and the reasoning behind each decision follow.
 
 ## Goal
 
@@ -61,10 +106,11 @@ on a machine with all three CLIs present:
    duplicate it elsewhere.
 2. **Claude Code** discovers it there natively — nothing else to do.
 3. **opencode** auto-loads external skills from that exact path too
-   (confirmed via `opencode debug skill`, which listed it with
-   `"location": "/home/sm/.claude/skills/audio/SKILL.md"` after removing a
-   separate opencode-local copy — the single path was sufficient on its
-   own). No copying into `~/.config/opencode/skill/` needed.
+   (verify with `opencode debug skill` — it should report the skill's
+   `location` as `~/.claude/skills/audio/SKILL.md`; a separate
+   opencode-local copy was removed during testing and the single shared
+   path was still sufficient). No copying into `~/.config/opencode/skill/`
+   needed.
 4. **Gemini CLI** has no auto-load path into `~/.claude/skills`, but ships
    a first-class skill system as of the version tested (`gemini skills
    <command>`, with `list`/`link`/`install`/`enable`/`disable`). Link the
@@ -166,6 +212,11 @@ Other voices (same URL pattern, substituting the name/quality path):
 `medium` models synthesize roughly 2-3x faster than `high` at some quality
 cost — worth offering if the user finds the startup delay noticeable.
 
+Playback needs a raw-audio player: `aplay` (from `alsa-utils`) or `paplay`
+(from `pulseaudio-utils`). Most desktop installs already have at least one;
+on a minimal system install `alsa-utils`. The wrapper below auto-selects
+whichever is present.
+
 Verify:
 ```bash
 printf 'Piper voice test.' | python3 -m piper \
@@ -225,15 +276,18 @@ Nothing to install — SAPI (`System.Speech`) ships with Windows.
 
 ### The wrapper (all OSes) — pick the clearest, most human-sounding voice available
 
-The goal (per the user's own instruction) is that the default voice should
-be the most human and clear one available, not just whatever the engine
-defaults to — the entire point of this skill was replacing a robotic
-espeak-ng voice with something actually understandable.
+The default voice should always be the clearest, most human-sounding one
+available on the platform, not whatever the engine happens to default to —
+the original motivation for this skill was replacing a robotic espeak-ng
+voice with something actually understandable.
 
-**Linux (Piper — the actual default):** use `en_US-lessac-high`. Chosen by
-the user in a direct A/B listening test against RHVoice, so don't quietly
-downgrade it. Two implementation details in the wrapper below are not
-optional:
+**Linux (Piper — the actual default):** use `en_US-lessac-high`. This was
+settled by playing RHVoice and Piper back to back and picking by ear, so
+don't silently downgrade it to a lower-quality engine. If the person
+installing this prefers a different voice or speed, change the two
+variables at the top of the wrapper — that's what they're there for — but
+run an actual listening comparison rather than assuming. Two implementation
+details in the wrapper below are not optional:
 
 - **Stream with `--output-raw`, never render to a file first.** Piper
   synthesizes a long answer roughly 3.8x faster than realtime, but it still
@@ -277,9 +331,10 @@ text="$1"
 PIPER_MODEL="${PIPER_MODEL:-$HOME/.local/share/piper-voices/en_US-lessac-high.onnx}"
 
 # Speaking speed. Piper's --length-scale stretches the audio: values above
-# 1.0 are SLOWER, below 1.0 faster, 1.0 is the model default. 1.15 was
-# chosen by the user from a four-way listening test (0.85 / 1.0 / 1.15 /
-# 1.3) as the most intelligible.
+# 1.0 are SLOWER, below 1.0 faster, 1.0 is the model default. 1.15 is a
+# tested default, picked as most intelligible from a four-way listening
+# comparison (0.85 / 1.0 / 1.15 / 1.3). Override per-machine by exporting
+# PIPER_LENGTH_SCALE rather than editing this file.
 PIPER_LENGTH_SCALE="${PIPER_LENGTH_SCALE:-1.15}"
 
 case "$(uname -s)" in
@@ -300,10 +355,22 @@ except Exception:
       # rendering the entire answer first. On a ~1800-character answer that
       # is ~4s to first audio instead of ~28s of dead silence. Synthesis
       # runs ~3.8x faster than playback, so it never stalls mid-answer.
+      # Pick whichever raw-audio player exists. aplay (alsa-utils) is the
+      # usual one but isn't guaranteed on a minimal or PipeWire-only system,
+      # so fall back to paplay before giving up.
+      if command -v aplay >/dev/null 2>&1; then
+        play() { aplay -q -r "$rate" -f S16_LE -c 1 -t raw -; }
+      elif command -v paplay >/dev/null 2>&1; then
+        play() { paplay --raw --rate="$rate" --format=s16le --channels=1; }
+      else
+        echo "voice-speak: no raw audio player found (install alsa-utils or pulseaudio-utils)" >&2
+        exit 1
+      fi
+
       printf '%s' "$text" \
         | python3 -m piper -m "$PIPER_MODEL" \
             --length-scale "$PIPER_LENGTH_SCALE" --output-raw 2>/dev/null \
-        | aplay -q -r "$rate" -f S16_LE -c 1 -t raw -
+        | play
     else
       # Fallback for a machine where Piper isn't installed yet. -w is
       # mandatory here: without it spd-say disconnects immediately, the
@@ -433,8 +500,9 @@ failing on a fresh machine during testing. Check first:
 `python3 -c "import pynput" 2>/dev/null`. If missing, install the build
 prerequisites (run directly, per the sudo note above), then pynput:
 ```bash
-sudo dnf install -y python3-devel gcc      # Fedora/RHEL
-# sudo apt install -y python3-dev gcc      # Debian/Ubuntu
+sudo dnf install -y python3-devel gcc        # Fedora/RHEL
+# sudo apt install -y python3-dev gcc        # Debian/Ubuntu
+# sudo pacman -S --needed python gcc         # Arch
 python3 -m pip install --user pynput
 ```
 macOS/Windows don't need this — wheels are prebuilt there.
